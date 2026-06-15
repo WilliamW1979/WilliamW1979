@@ -14,8 +14,9 @@ I've been writing software in C and C++ since 1997 and have been working in C# a
 | [PluginManager](https://github.com/WilliamW1979/PluginManager) | Runtime plugin loader with service injection, hot-reload, and lifecycle management | C# / .NET 10 |
 | [Card-Deck-Handler](https://github.com/WilliamW1979/Card-Deck-Handler) | High-performance card hand evaluation library using 64-bit integer representation | C# / .NET 10 |
 | [GameTime](https://github.com/WilliamW1979/GameTime) | Universal game time management library with configurable calendars, event scheduling, and binary persistence | C# / .NET 10 |
+| [MySqlDatabase](https://github.com/WilliamW1979/MySqlDatabase) | Async-first MySQL library with fluent query builder, transactions, bulk inserts, and schema management | C# / .NET 8+ |
 
-All libraries share a consistent design philosophy: zero external dependencies, pluggable interfaces for extensibility, and clean disposal patterns.
+All libraries share a consistent design philosophy: zero external dependencies where possible, pluggable interfaces for extensibility, and clean disposal patterns.
 
 ---
 
@@ -61,6 +62,26 @@ A universal game time management library built for distributed game server archi
 
 ---
 
+## MySqlDatabase
+
+An async-first MySQL library for .NET built on [MySqlConnector](https://mysqlconnector.net/). Wraps connection management, parameterized queries, transactions, schema introspection, and bulk operations behind a clean API — no boilerplate, no string-concatenated SQL.
+
+**Key design decisions:**
+- **Parameterized by default** — SQL injection is structurally prevented; there is no code path that requires raw string interpolation into queries
+- **Pluggable logging** — implements the same `IDbLogger` interface pattern used across the library suite; ships with `NullDbLogger`, `ConsoleDbLogger`, and opt-in `MicrosoftLoggerAdapter` for `Microsoft.Extensions.Logging`
+- **Fluent `SelectBuilder`** — composes `WHERE`, `JOIN`, `GROUP BY`, `HAVING`, `ORDER BY`, `LIMIT`, and `OFFSET` without string manipulation, and executes directly against a `MySqlDatabase` or open `MySqlDatabaseTransaction`
+- **`DbRow` result type** — typed `Get<T>`, `TryGet<T>`, and named helpers (`GetString`, `GetInt`, `GetLong`, etc.) with consistent null handling; no object mapping framework required
+- **Schema management** — `EnsureTableAsync` creates tables or adds missing columns to existing ones; `EnsureIndexAsync` adds indexes idempotently; both are safe to call on every startup
+
+**Bulk insert variants:**
+- `BulkInsertAsync` — single-statement batch for small sets
+- `BulkInsertChunkedAsync` — splits large sets into configurable chunks
+- `BulkInsertTransactedAsync` — chunked inside a single transaction for all-or-nothing guarantees
+
+**Transaction support:** `TransactAsync` callback (commit/rollback handled automatically), `BeginTransactionAsync` for manual control, and savepoint API (`SavepointAsync`, `RollbackToAsync`, `ReleaseSavepointAsync`).
+
+---
+
 ## Current Project — Journey of the Forgotten *(private)*
 
 A large-scale MMORPG server written in C# with a distributed multi-process architecture designed for high availability and zero-downtime updates.
@@ -71,7 +92,7 @@ A large-scale MMORPG server written in C# with a distributed multi-process archi
 - **Independent update cycles** — because each subsystem is a separate process, patches can be deployed surgically; a bug fix in the AI layer never requires a full server restart
 - **Distributed load splitting** — compute-heavy workloads are distributed across processes rather than bottlenecked in a monolith, allowing horizontal scaling of individual systems
 
-This project applies the same library infrastructure from the public repos above — Logger, SettingsFile, PluginManager, and GameTime are all in active use as internal dependencies.
+This project applies the same library infrastructure from the public repos above — Logger, SettingsFile, PluginManager, GameTime, and MySqlDatabase are all in active use as internal dependencies.
 
 ---
 
@@ -79,7 +100,7 @@ This project applies the same library infrastructure from the public repos above
 
 **Languages:** C (1997–present), C++ (1997–present), C# / .NET (current)
 
-**Areas:** Distributed systems architecture, multi-process IPC, library design, bit manipulation and performance optimization, asynchronous programming, plugin architecture, encryption integration, AI/simulation systems, card game logic and equity calculation, game time and calendar systems, binary serialization, system administration, Windows & Linux, data operations
+**Areas:** Distributed systems architecture, multi-process IPC, library design, bit manipulation and performance optimization, asynchronous programming, plugin architecture, encryption integration, AI/simulation systems, card game logic and equity calculation, game time and calendar systems, binary serialization, database access layers, system administration, Windows & Linux, data operations
 
 **Tools:** Visual Studio, Git, VS Code, Ollama (local AI), Microsoft Office, Google Workspace
 

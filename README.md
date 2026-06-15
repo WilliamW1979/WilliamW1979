@@ -110,7 +110,9 @@ This project applies the same library infrastructure from the public repos above
 
 I work independently and remotely. I'm available for contract, part-time, or full-time remote roles in software development, IT support, or technical operations.
 
-📧 WilliamW1979@netscape.net · 📍 Berwick, PA (Eastern Time) · 💼 [LinkedIn](https://www.linkedin.com/in/william-glenn-ward/)
+📧 WilliamW1979@netscape.net
+📍 Berwick, PA (Eastern Time)
+💼 [LinkedIn](https://www.linkedin.com/in/william-glenn-ward/)
 
 ---
 

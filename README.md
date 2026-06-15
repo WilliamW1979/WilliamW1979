@@ -13,6 +13,7 @@ I've been writing software in C and C++ since 1997 and have been working in C# a
 | [SettingsFile](https://github.com/WilliamW1979/SettingsFile) | INI-style config file wrapper with typed Get/TryGet and optional encryption | C# / .NET 10 |
 | [PluginManager](https://github.com/WilliamW1979/PluginManager) | Runtime plugin loader with service injection, hot-reload, and lifecycle management | C# / .NET 10 |
 | [Card-Deck-Handler](https://github.com/WilliamW1979/Card-Deck-Handler) | High-performance card hand evaluation library using 64-bit integer representation | C# / .NET 10 |
+| [GameTime](https://github.com/WilliamW1979/GameTime) | Universal game time management library with configurable calendars, event scheduling, and binary persistence | C# / .NET 10 |
 
 All libraries share a consistent design philosophy: zero external dependencies, pluggable interfaces for extensibility, and clean disposal patterns.
 
@@ -38,6 +39,28 @@ A bit-manipulation-first card game library where an entire hand is packed into a
 
 ---
 
+## GameTime
+
+A universal game time management library built for distributed game server architectures. Converts real wall-clock time into game time at any configurable ratio and drives a fully customizable calendar — any number of months, day names, week lengths, leap year intervals, and holidays defined entirely through configuration.
+
+**Key design decisions:**
+- **Zero required dependencies** — settings, logging, and event storage are all pluggable interfaces. Bring your own INI files, JSON, a database, or hardcoded values. The library compiles and runs with nothing else referenced.
+- **Opaque event payloads** — events carry `byte[]` that the library stores and fires without interpreting. Each service serializes its own data however it wants; GameTime just delivers the bytes at the right moment.
+- **Thread-safe registration** — designed for a dedicated time server process where network handler threads register and unregister events while the tick loop runs independently. All registry operations are lock-protected.
+- **Binary event persistence** — events survive process restarts via a versioned binary format with magic header validation. Corrupt records are skipped and logged rather than crashing the process.
+- **Isolated handler invocation** — each subscriber is invoked individually. One throwing handler never prevents others from firing.
+
+**Scheduling capabilities:**
+- Once, daily, weekly, monthly, and yearly event repeat modes
+- Per-minute bucket dispatch — O(1) event lookup at fire time regardless of how many events are registered
+- Daily scheduled tasks firing at specific game hours and minutes
+- Per-day-name subscriptions (e.g. fire every time it is Monday in game time)
+- Second, minute, hour, day, month, year, and holiday change events
+
+**Time ratio examples:** `1h_24h` (1 real hour = 24 game hours), `30m_1d` (30 real minutes = 1 game day), `1m_1h` (1 real minute = 1 game hour). Supports hours, minutes, and days with decimal values.
+
+---
+
 ## Current Project — Journey of the Forgotten *(private)*
 
 A large-scale MMORPG server written in C# with a distributed multi-process architecture designed for high availability and zero-downtime updates.
@@ -48,7 +71,7 @@ A large-scale MMORPG server written in C# with a distributed multi-process archi
 - **Independent update cycles** — because each subsystem is a separate process, patches can be deployed surgically; a bug fix in the AI layer never requires a full server restart
 - **Distributed load splitting** — compute-heavy workloads are distributed across processes rather than bottlenecked in a monolith, allowing horizontal scaling of individual systems
 
-This project applies the same library infrastructure from the public repos above — Logger, SettingsFile, and PluginManager are all in active use as internal dependencies.
+This project applies the same library infrastructure from the public repos above — Logger, SettingsFile, PluginManager, and GameTime are all in active use as internal dependencies.
 
 ---
 
@@ -56,7 +79,7 @@ This project applies the same library infrastructure from the public repos above
 
 **Languages:** C (1997–present), C++ (1997–present), C# / .NET (current)
 
-**Areas:** Distributed systems architecture, multi-process IPC, library design, bit manipulation and performance optimization, asynchronous programming, plugin architecture, encryption integration, AI/simulation systems, card game logic and equity calculation, system administration, Windows & Linux, data operations
+**Areas:** Distributed systems architecture, multi-process IPC, library design, bit manipulation and performance optimization, asynchronous programming, plugin architecture, encryption integration, AI/simulation systems, card game logic and equity calculation, game time and calendar systems, binary serialization, system administration, Windows & Linux, data operations
 
 **Tools:** Visual Studio, Git, VS Code, Ollama (local AI), Microsoft Office, Google Workspace
 

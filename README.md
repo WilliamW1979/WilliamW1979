@@ -5,6 +5,25 @@ I've been writing software in C and C++ since 1997 and have been working in C# a
 
 ---
 
+## Featured Application — WindowlessCursorLock
+
+**[⬇ Download v1.0.0](https://github.com/WilliamW1979/WindowlessCursorLock/releases/tag/v1.0.0) · [View Source](https://github.com/WilliamW1979/WindowlessCursorLock)**
+
+A system tray utility for Windows that confines the mouse cursor to whichever monitor a borderless-fullscreen game currently occupies — eliminating the accidental alt-tab caused by a cursor drifting to a second monitor mid-session.
+
+Runs silently in the background. No configuration required for most games. Alt-tabbing releases the clip instantly; the cursor is never restricted system-wide.
+
+**Key design decisions:**
+- **Heuristic borderless detection** — Compares the focused window's bounds against its monitor's full resolution within a configurable pixel tolerance, and explicitly excludes maximized normal windows, which share similar bounds but are a distinct Win32 window state
+- **Dynamic monitor tracking** — If the game is moved to a different monitor via `Win+Shift+Left/Right`, the clip region follows on the next poll cycle with no user action required
+- **Force-watch list** — Executables that don't trigger auto-detect (e.g. windowed-mode games) can be registered by selecting from the live process list or browsing to an `.exe` on disk
+- **TOML-persisted settings** — Poll interval, startup behavior, and the watched executable list are stored in `%AppData%\WindowlessCursorLock\settings.toml`
+- **Optional startup integration** — Windows startup registration is managed entirely from the tray context menu
+
+**Stack:** C# · .NET 10 · Win32 API (P/Invoke) · System Tray (NotifyIcon) · TOML · Windows 10/11
+
+---
+
 ## Open Source Libraries
 
 | Repository | Description | Language |
